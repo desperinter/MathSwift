@@ -5,6 +5,10 @@
 //  Created by Enyan HUANG on 6/11/14.
 //  Copyright (c) 2014 The Hong Kong Polytechnic University. All rights reserved.
 //
+//  Contributed by Dang Vinh on 09/10/2016
+//  Added functions:
+//  - M.qrDecomposition(): factorize matrix M = Q*R by using QR decomposition algorithm
+//  - A.solve(B): find x of linear system Ax = B. If A is singular, return least square solution
 
 import Foundation
 import Accelerate
@@ -69,6 +73,39 @@ extension Matrix {
         let VT = Matrix(rows: self.columns, columns: self.columns, elements: vt)
         
         return (U.transpose, S, VT.transpose)
+    }
+
+    public func qrDecomposition() -> (Q: Matrix, R: Matrix) {
+        var m = __CLPK_integer(self.rows)
+        var n = __CLPK_integer(self.columns)
+        var minMN = min(m, n)
+        var a = self.transpose.elements
+        var lda = m
+        var tau = [Double](count: minMN, repeatedValue: 0.0)
+        var lwork = max(1,n)
+        var work = [Double](count: lwork, repeatedValue: 0.0)
+        var info: __CLPK_integer = 0
+
+        dgeqrf_(&m, &n, &a, &lda, &tau, &work, &lwork, &info)
+
+        var R = Matrix(rows: minMN, columns: n, repeatedValue: 0.0)
+        var Q = identityWithSize(m)
+
+        let I = identityWithSize(m)
+        for i in 0..<minMN { 
+            for j in 0...i {
+                R[i,j] = a[i*m+j].toMatrix()
+            }
+            var v = Matrix(rows: m, columns: 1, repeatedValue: 0.0)
+            v[i,0] = 1.0
+            for j in i+1..<m {
+                v[j,0] = a[j*m+i]
+            }
+            var H: I-tau[i]*v*v.transpose
+            Q = Q*H
+        }
+
+        return (Q.transpose, R.transpose)
     }
 
 }

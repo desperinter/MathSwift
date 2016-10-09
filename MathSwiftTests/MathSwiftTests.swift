@@ -209,7 +209,7 @@ class MathSwiftTests: XCTestCase {
     }
     
     func testSVD() {
-        let m = Matrix(elements: [[1,2,3],[4,5,6],[7,8,9]])
+        let m = Matrix(elements: [[1,2,3],[4,5,6],[7,8,9],[10,11,12]])
         let (U,S,VT) = m.singularValueDecomposition()
         XCTAssert(U * U.transpose == Matrix.identityWithSize(m.rows), "U should be orthogonal")
         XCTAssert(VT * VT.transpose == Matrix.identityWithSize(m.columns), "V should be orthogonal")
@@ -217,10 +217,17 @@ class MathSwiftTests: XCTestCase {
     }
     
     func testEigen() {
-        let m = Matrix(elements: [[1,2],[3,4]])
+        let m = Matrix(elements: [[1,0,1],[0,1,4],[5,2,0]])
         let (values, vectors) = m.eigen()
         XCTAssert(m * vectors[0] == values[0] * vectors[0], "Eigen wrong")
         XCTAssert(m * vectors[1] == values[1] * vectors[1], "Eigen wrong")
+    }
+
+    func testQRD() {
+        let m = Matrix(elements: [[1,2,3],[4,5,6],[7,8,9],[10,11,12]])
+        let (Q,R) = m.qrDecomposition()
+        XCTAssert(Q * Q.transpose == Matrix.identityWithSize(m.rows), "Q should be orthogonal")
+        XCTAssert(m == Q*R, "M should be equal to Q*R")
     }
 
 }
