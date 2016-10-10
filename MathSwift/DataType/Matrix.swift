@@ -22,7 +22,7 @@ extension Int: MatrixIndexType {}
 func toIntArray(index: MatrixIndexType) -> [Int] {
     
     if let intArrayIndex = index as? [Int] {
-        return index as [Int]
+        return index as! [Int]
     } else if let rangeIndex = index as? Range<Int> {
         return rangeIndex.map({$0})
     } else if let intIndex = index as? Int {
@@ -112,7 +112,7 @@ public struct Matrix {
         var noi = 0
         for i in 0..<min(self.rows, self.columns) {
             if i != Int(ipiv[i]) {
-                noi++
+                noi += 1
             }
         }
         if noi % 2 == 1 {
@@ -281,12 +281,12 @@ public struct Matrix {
 
 extension Matrix: Equatable {}
 
-extension Matrix: Printable {
+extension Matrix: CustomStringConvertible {
     public var description: String {
         var result = ""
         for i in 0..<self.rows {
             for j in 0..<self.columns {
-                result += NSString(format: "%.3f\t", self[i,j].toDouble()!)
+                result += NSString(format: "%.3f\t", self[i,j].toDouble()!) as String
             }
             result += "\n"
         }
@@ -298,7 +298,7 @@ extension Matrix: SequenceType {
     
     public func generate() -> AnyGenerator<Double> {
         var nextIndex = 0
-        return AnyGenerator<Double> {
+        return AnyGenerator {
             if nextIndex >= self.elements.count {
                 return nil
             }
@@ -308,6 +308,7 @@ extension Matrix: SequenceType {
             return self.elements[nextIndex]
         }
     }
+    
 }
 
 extension Matrix: IntegerLiteralConvertible {
@@ -333,7 +334,7 @@ extension Matrix: FloatLiteralConvertible {
 public func == (lhs: Matrix, rhs: Matrix) -> Bool {
     if lhs.columns == rhs.columns && lhs.rows == rhs.rows {
         for i in 0..<lhs.elements.count {
-            if !doublePrecisionEqual(lhs.elements[i], rhs.elements[i]) {
+            if !doublePrecisionEqual(lhs.elements[i], b: rhs.elements[i]) {
                 break;
             } else if i == lhs.elements.count - 1 {
                 return true
