@@ -296,13 +296,16 @@ extension Matrix: Printable {
 
 extension Matrix: SequenceType {
     
-    public func generate() -> GeneratorOf<Double> {
+    public func generate() -> AnyGenerator<Double> {
         var nextIndex = 0
-        return GeneratorOf<Double> {
-            if nextIndex == self.elements.count {
+        return AnyGenerator<Double> {
+            if nextIndex >= self.elements.count {
                 return nil
             }
-            return self.elements[nextIndex++]
+            defer {
+                nextIndex += 1
+            }
+            return self.elements[nextIndex]
         }
     }
 }
