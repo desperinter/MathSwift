@@ -78,33 +78,33 @@ extension Matrix {
     public func qrDecomposition() -> (Q: Matrix, R: Matrix) {
         var m = __CLPK_integer(self.rows)
         var n = __CLPK_integer(self.columns)
-        var minMN = min(m, n)
+        let minMN = min(m, n)
         var a = self.transpose.elements
         var lda = m
-        var tau = [Double](count: minMN, repeatedValue: 0.0)
+        var tau = [Double](count: Int(minMN), repeatedValue: 0.0)
         var lwork = max(1,n)
-        var work = [Double](count: lwork, repeatedValue: 0.0)
+        var work = [Double](count: Int(lwork), repeatedValue: 0.0)
         var info: __CLPK_integer = 0
-
+        
         dgeqrf_(&m, &n, &a, &lda, &tau, &work, &lwork, &info)
-
-        var R = Matrix(rows: minMN, columns: n, repeatedValue: 0.0)
-        var Q = identityWithSize(m)
-
-        let I = identityWithSize(m)
-        for i in 0..<minMN { 
+        
+        var R = Matrix(rows: Int(minMN), columns: Int(n))
+        var Q = Matrix.identityWithSize(Int(m))
+        
+        let I = Matrix.identityWithSize(Int(m))
+        for i in 0..<Int(minMN) {
             for j in 0...i {
-                R[i,j] = a[i*m+j].toMatrix()
+                R[i,j] = a[i*Int(m)+j].toMatrix()
             }
-            var v = Matrix(rows: m, columns: 1, repeatedValue: 0.0)
+            var v = Matrix(rows: Int(m), columns: 1)
             v[i,0] = 1.0
-            for j in i+1..<m {
-                v[j,0] = a[j*m+i]
+            for j in i+1..<Int(m) {
+                v[j,0] = a[j*Int(m)+i].toMatrix()
             }
-            var H: I-tau[i]*v*v.transpose
+            let H = I-tau[i]*v*v.transpose
             Q = Q*H
         }
-
+        
         return (Q.transpose, R.transpose)
     }
 
