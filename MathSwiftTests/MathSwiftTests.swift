@@ -156,14 +156,14 @@ class MathSwiftTests: XCTestCase {
     }
     
     func testDeterminant() {
-            let m1 = Matrix(elements: [[1,2,3],[4,5,6],[7,8,9]])
-            XCTAssert(doublePrecisionEqual(m1.determinant, 0), "Determinant wrong for singular matrix")
-            let m2 = Matrix(elements: [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
-            XCTAssert(m2.determinant == 1, "Determinant wrong for I(4x4)")
-            let m3 = Matrix.identityWithSize(5)
-            XCTAssert(m3.determinant == 1, "Determinant wrong for I(5x5)")
-            let m4 = Matrix(elements: [[1,2,0],[-1,1,1],[1,2,3]])
-            XCTAssert(m4.determinant == 9, "Determinant wrong for a 3x3 matrix")
+        let m1 = Matrix(elements: [[1,2,3],[4,5,6],[7,8,9]])
+        XCTAssert(doublePrecisionEqual(m1.determinant, b: 0), "Determinant wrong for singular matrix")
+        let m2 = Matrix(elements: [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
+        XCTAssert(m2.determinant == 1, "Determinant wrong for I(4x4)")
+        let m3 = Matrix.identityWithSize(5)
+        XCTAssert(m3.determinant == 1, "Determinant wrong for I(5x5)")
+        let m4 = Matrix(elements: [[1,2,0],[-1,1,1],[1,2,3]])
+        XCTAssert(m4.determinant == 9, "Determinant wrong for a 3x3 matrix")
     }
     
     func testInverse() {
@@ -205,7 +205,7 @@ class MathSwiftTests: XCTestCase {
     func testFormat() {
         let constant = sqrt(2.0)
         let m1 = Matrix(elements: [[constant,0,2.3],[1,constant/2,1.87432],[0,2.5,0]])
-        println(m1)
+        print(m1)
     }
     
     func testSVD() {
@@ -213,7 +213,11 @@ class MathSwiftTests: XCTestCase {
         let (U,S,VT) = m.singularValueDecomposition()
         XCTAssert(U * U.transpose == Matrix.identityWithSize(m.rows), "U should be orthogonal")
         XCTAssert(VT * VT.transpose == Matrix.identityWithSize(m.columns), "V should be orthogonal")
-        XCTAssert(m == U * S * VT, "M should be equal to U*S*VT")
+        print(U)
+        print(S)
+        print(VT)
+        print(U*S*VT)
+        XCTAssert(m == U*S*VT, "M should be equal to U*S*VT")
     }
     
     func testEigen() {
@@ -222,12 +226,16 @@ class MathSwiftTests: XCTestCase {
         XCTAssert(m * vectors[0] == values[0] * vectors[0], "Eigen wrong")
         XCTAssert(m * vectors[1] == values[1] * vectors[1], "Eigen wrong")
     }
-
+    
     func testQRD() {
         let m = Matrix(elements: [[1,2,3],[4,5,6],[7,8,9],[10,11,12]])
         let (Q,R) = m.qrDecomposition()
         XCTAssert(Q * Q.transpose == Matrix.identityWithSize(m.rows), "Q should be orthogonal")
+        print(Q)
+        print(R)
+        print(Q*R)
         XCTAssert(m == Q*R, "M should be equal to Q*R")
-    }
 
+    }
+    
 }

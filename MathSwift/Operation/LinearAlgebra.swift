@@ -51,7 +51,7 @@ extension Matrix {
         var jobvt: Int8 = 65
         var m = __CLPK_integer(self.rows)
         var n = __CLPK_integer(self.columns)
-        var minMN = min(m, n)
+        let minMN = min(m, n)
         var a = self.transpose.elements
         var lda = m
         var ldu = m
@@ -74,7 +74,7 @@ extension Matrix {
         
         return (U.transpose, S, VT.transpose)
     }
-
+    
     public func qrDecomposition() -> (Q: Matrix, R: Matrix) {
         var m = __CLPK_integer(self.rows)
         var n = __CLPK_integer(self.columns)
@@ -88,24 +88,30 @@ extension Matrix {
         
         dgeqrf_(&m, &n, &a, &lda, &tau, &work, &lwork, &info)
         
-        var R = Matrix(rows: Int(minMN), columns: Int(n))
+        var R = Matrix(rows: Int(m), columns: Int(n))
         var Q = Matrix.identityWithSize(Int(m))
         
         let I = Matrix.identityWithSize(Int(m))
-        for i in 0..<Int(minMN) {
-            for j in 0...i {
-                R[i,j] = a[i*Int(m)+j].toMatrix()
-            }
+        for c in 0..<Int(n){
             var v = Matrix(rows: Int(m), columns: 1)
-            v[i,0] = 1.0
-            for j in i+1..<Int(m) {
-                v[j,0] = a[j*Int(m)+i].toMatrix()
+            for r in 0..<Int(m){
+                if r <= c {
+                    if r < Int(minMN){
+                        R[r,c] = (-a[Int(m)*c+r]).toMatrix()
+                    }
+                    v[r,0] = 0.0
+                }
+                else {
+                    v[r,0] = a[Int(m)*c+r].toMatrix()
+                }
             }
-            let H = I-tau[i]*v*v.transpose
-            Q = Q*H
+            
+            if c < Int(minMN){
+                v[c,0] = 1.0
+                let H = I-tau[c]*v*v.transpose
+                Q = Q*H
+            }
         }
-        
-        return (Q.transpose, R.transpose)
+        return (Q, R)
     }
-
 }

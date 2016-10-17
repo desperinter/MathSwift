@@ -4,7 +4,8 @@
 //
 //  Created by Enyan Huang on 10/10/14.
 //  Copyright (c) 2014 The Hong Kong Polytechnic University. All rights reserved.
-//
+//  Edited by Vinh Dang on 17/10/2016
+//  - The method to get transpose of matrix is no longer correct and must be changed
 
 import Foundation
 import Accelerate
@@ -47,7 +48,7 @@ public struct Matrix {
     /// Return the transpose matrix of `self`
     public var transpose: Matrix {
         var result = Matrix(rows: self.columns, columns: self.rows)
-        vDSP_mtransD(self.elements, 1, &result.elements, 1, vDSP_Length(self.rows), vDSP_Length(self.columns))
+        vDSP_mtransD(self.elements, 1, &result.elements, 1, vDSP_Length(self.columns), vDSP_Length(self.rows))
         return result
     }
     
@@ -554,3 +555,5 @@ extension Double {
         return Matrix(elements: [[self]])
     }
 }
+
+
