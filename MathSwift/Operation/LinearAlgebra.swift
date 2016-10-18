@@ -114,4 +114,33 @@ extension Matrix {
         }
         return (Q, R)
     }
+
+    public func solve(B: Matrix) -> Matrix {
+        let Ainv = self.inverse
+        if Ainv != nil {
+            return Ainv!*B
+        }
+        
+        var m = __CLPK_integer(self.rows)
+        var n = __CLPK_integer(self.columns)
+        var nrhs = __CLPK_integer(B.columns)
+        let minMN = min(m, n)
+        var a = self.transpose.elements
+        var b = B.transpose.elements
+        var lda = m
+        var ldb = max(m,n)
+        var rcond = __CLPK_doublereal(-1.0)
+        var rank = __CLPK_integer(0)
+        var s = [Double](count: Int(minMN), repeatedValue: 0.0)
+        var lwork = __CLPK_integer(12*5*ldb*ldb*ldb)
+        var work = [Double](count: Int(lwork), repeatedValue: 0.0)
+        var iwork:[Int32] = Array(count: Int(3*minMN*minMN+11*minMN), repeatedValue: 0)
+        var info: __CLPK_integer = 0
+        
+        dgelsd_(&m, &n, &nrhs, &a, &lda, &b, &ldb, &s, &rcond, &rank, &work, &lwork, &iwork, &info)
+        
+        let X = Matrix(rows: B.columns, columns: B.rows, elements: b)
+        
+        return X.transpose
+    }
 }
