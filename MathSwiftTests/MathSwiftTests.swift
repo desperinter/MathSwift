@@ -235,7 +235,14 @@ class MathSwiftTests: XCTestCase {
         print(R)
         print(Q*R)
         XCTAssert(m == Q*R, "M should be equal to Q*R")
-
     }
     
+    func testSolve() {
+        let a = Matrix(elements: [[1,2,3],[4,5,6],[7,8,9]])
+        let b = Matrix(elements: [[1],[0],[9]])
+        let x = a.solve(b)
+        print(x)
+        print(a*x)
+        print(b)
+    }
 }
